@@ -1,5 +1,10 @@
 # Knotlog
 
+[![Become a Supporter](https://img.shields.io/badge/patreon-sponsor%20me-e6461a.svg)](https://www.patreon.com/shadowhand)
+[![Latest Stable Version](https://img.shields.io/packagist/v/knotlog/knotlog.svg)](https://packagist.org/packages/knotlog/knotlog)
+[![License](https://img.shields.io/packagist/l/knotlog/knotlog.svg)](https://github.com/shadowhand/knotlog/blob/master/LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/shadowhand/knotlog/tests.yml?branch=main)](https://github.com/shadowhand/knotlog)
+
 **Wide logging for PHP**
 
 Knotlog is inspired by the ideas of [loggingsucks.com](https://loggingsucks.com) and implements wide logging
