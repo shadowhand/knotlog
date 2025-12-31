@@ -43,6 +43,7 @@ composer require knotlog/knotlog
 
 ```php
 use Knotlog\Log;
+use Knotlog\Output\FileWriter;
 
 $log = new Log();
 
@@ -56,7 +57,7 @@ $log->set('response_status', 200);
 $log->set('duration_ms', $duration);
 
 // At the end of the request, emit the wide event
-echo json_encode($log);
+new FileWriter()->write($log);
 ```
 
 The `Log` class implements `JsonSerializable`, so it can be directly encoded to JSON for structured logging systems.
