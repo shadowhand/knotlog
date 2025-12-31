@@ -1,0 +1,57 @@
+{
+    "config": {
+        "verbosity": "normal"
+    },
+    "pre-commit": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "\\CaptainHook\\App\\Hook\\PHP\\Action\\Linting"
+            },
+            {
+                "action": "composer run test",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
+                        "args": [
+                            "php"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "post-change": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "composer install",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileChanged\\Any",
+                        "args": [
+                            [
+                                "composer.json",
+                                "composer.lock"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "commit-msg": {
+      "enabled": true,
+      "actions": [
+        {
+          "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Beams",
+          "options": {
+            "subjectLength": 50,
+            "bodyLineLength": 72,
+            "checkImperativeBeginningOnly": true
+          },
+          "conditions": []
+        }
+      ]
+    }
+}

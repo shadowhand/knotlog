@@ -1,0 +1,11 @@
+includes:
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+    level: 10
+    treatPhpDocTypesAsCertain: false
+    parallel:
+        maximumNumberOfProcesses: 8
+    paths:
+        - src
+        - tests
