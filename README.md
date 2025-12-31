@@ -150,6 +150,85 @@ use Knotlog\Console\LogCommand;
 $log->set('console', LogCommand::fromCommand($command, $input));
 ```
 
+## Log Writers
+
+Knotlog provides a `LogWriter` interface to enable flexible output destinations for wide log events.
+The interface defines a simple contract with a single method `write(Log $log): void`.
+
+### FileWriter
+
+The `FileWriter` writes log events as JSON-encoded lines to a file or stream.
+
+```php
+use Knotlog\Output\FileWriter;
+
+// Write to stderr (default)
+$writer = new FileWriter();
+
+// Write to a specific file
+$writer = new FileWriter('/var/log/app.log');
+
+// Use custom JSON encoding flags
+$writer = new FileWriter('php://stdout', JSON_PRETTY_PRINT);
+
+// Write the log event
+$writer->write($log);
+```
+
+Each log line is prefixed with a status indicator:
+
+- `ERROR` - when the log contains an error or exception
+- `INFO` - for all other log events
+
+### LoggerWriter
+
+The `LoggerWriter` outputs log events to any [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logger.
+
+```php
+use Knotlog\Output\LoggerWriter;
+
+// Use with any PSR-3 logger
+$writer = new LoggerWriter($psrLogger);
+
+// Use custom JSON encoding flags
+$writer = new LoggerWriter($psrLogger, JSON_PRETTY_PRINT);
+
+// Write the log event
+$writer->write($log);
+```
+
+The writer automatically routes log events to the appropriate log level:
+
+- `error()` - when the log contains an error or exception
+- `info()` - for all other log events
+
+### SampledWriter
+
+The `SampledWriter` is a decorator that samples log events based on a configurable rate, while always logging errors.
+
+```php
+use Knotlog\Output\SampledWriter;
+use Knotlog\Output\FileWriter;
+
+// Sample 1 in 5 requests (20%)
+$writer = new SampledWriter(new FileWriter(), 5);
+
+// Sample 1 in 100 requests (1%)
+$writer = new SampledWriter(new FileWriter(), 100);
+
+// Write the log event (might be sampled out unless it's an error)
+$writer->write($log);
+```
+
+The sampled writer ensures that:
+
+- All log events with errors or exceptions are always written (sampling is bypassed)
+- Non-error events are sampled at the specified rate
+- The sampling decision is made once at construction time and applies to all writes
+
+This is particularly useful for high-traffic applications where logging every successful request would be
+prohibitively expensive, while still capturing all errors for debugging.
+
 ## License
 
 MIT License, see `LICENSE` file for details.
