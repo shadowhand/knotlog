@@ -19,7 +19,7 @@ final readonly class RequestLog
             host: $request->getUri()->getHost(),
             path: $request->getUri()->getPath(),
             query: $query,
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore argument.type
             headers: $request->getHeaders(),
         );
     }

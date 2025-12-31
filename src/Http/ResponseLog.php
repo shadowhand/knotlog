@@ -12,7 +12,7 @@ final readonly class ResponseLog
     {
         return new self(
             status: $response->getStatusCode(),
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore argument.type
             headers: $response->getHeaders(),
             size: $response->getBody()->getSize(),
         );
