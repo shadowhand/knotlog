@@ -189,7 +189,8 @@ Each log line is prefixed with a status indicator:
 
 ### LoggerWriter
 
-The `LoggerWriter` outputs log events to any [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logger.
+The `LoggerWriter` outputs log events to any [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logger
+using message interpolation.
 
 ```php
 use Knotlog\Output\LoggerWriter;
@@ -197,8 +198,8 @@ use Knotlog\Output\LoggerWriter;
 // Use with any PSR-3 logger
 $writer = new LoggerWriter($psrLogger);
 
-// Use custom JSON encoding flags
-$writer = new LoggerWriter($psrLogger, JSON_PRETTY_PRINT);
+// Customize the message and error keys
+$writer = new LoggerWriter($psrLogger, messageKey: 'msg', errorKey: 'err');
 
 // Write the log event
 $writer->write($log);
@@ -206,8 +207,11 @@ $writer->write($log);
 
 The writer automatically routes log events to the appropriate log level:
 
-- `error()` - when the log contains an error or exception
-- `info()` - for all other log events
+- `error()` - when the log contains an error or exception (uses `{error}` placeholder)
+- `info()` - for all other log events (uses `{message}` placeholder)
+
+The entire log context is passed to the logger, allowing it to format and process the data according
+to its own implementation. The message key can be customized to match your logging schema.
 
 ### SampledWriter
 

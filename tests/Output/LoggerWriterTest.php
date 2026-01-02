@@ -11,11 +11,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-use function json_encode;
-
-use const JSON_PRETTY_PRINT;
-use const JSON_THROW_ON_ERROR;
-
 #[CoversClass(LoggerWriter::class)]
 final class LoggerWriterTest extends TestCase
 {
@@ -26,12 +21,11 @@ final class LoggerWriterTest extends TestCase
 
         $log = new Log();
         $log->set('message', 'test');
-
-        $expectedJson = json_encode($log, JSON_THROW_ON_ERROR);
+        $log->set('user_id', 123);
 
         $logger->expects($this->once())
             ->method('info')
-            ->with($expectedJson);
+            ->with('{message}', ['message' => 'test', 'user_id' => 123]);
 
         $logger->expects($this->never())
             ->method('error');
@@ -47,12 +41,11 @@ final class LoggerWriterTest extends TestCase
 
         $log = new Log();
         $log->set('error', 'Something went wrong');
-
-        $expectedJson = json_encode($log, JSON_THROW_ON_ERROR);
+        $log->set('user_id', 123);
 
         $logger->expects($this->once())
             ->method('error')
-            ->with($expectedJson);
+            ->with('{error}', ['error' => 'Something went wrong', 'user_id' => 123]);
 
         $logger->expects($this->never())
             ->method('info');
@@ -68,12 +61,11 @@ final class LoggerWriterTest extends TestCase
 
         $log = new Log();
         $log->set('exception', 'RuntimeException');
-
-        $expectedJson = json_encode($log, JSON_THROW_ON_ERROR);
+        $log->set('user_id', 123);
 
         $logger->expects($this->once())
             ->method('error')
-            ->with($expectedJson);
+            ->with('{error}', ['exception' => 'RuntimeException', 'user_id' => 123]);
 
         $logger->expects($this->never())
             ->method('info');
@@ -83,21 +75,62 @@ final class LoggerWriterTest extends TestCase
     }
 
     #[Test]
-    public function it_uses_custom_json_flags(): void
+    public function it_uses_custom_message_key(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $log = new Log();
+        $log->set('msg', 'custom message');
+        $log->set('user_id', 123);
+
+        $logger->expects($this->once())
+            ->method('info')
+            ->with('{msg}', ['msg' => 'custom message', 'user_id' => 123]);
+
+        $writer = new LoggerWriter($logger, messageKey: 'msg');
+        $writer->write($log);
+    }
+
+    #[Test]
+    public function it_uses_custom_error_key(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $log = new Log();
+        $log->set('error', 'Something went wrong');
+        $log->set('err', 'custom error');
+
+        $logger->expects($this->once())
+            ->method('error')
+            ->with('{err}', ['error' => 'Something went wrong', 'err' => 'custom error']);
+
+        $writer = new LoggerWriter($logger, errorKey: 'err');
+        $writer->write($log);
+    }
+
+    #[Test]
+    public function it_passes_entire_log_context_to_logger(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
 
         $log = new Log();
         $log->set('user_id', 123);
         $log->set('action', 'login');
+        $log->set('cart_items', ['item1', 'item2']);
+        $log->set('duration_ms', 45.2);
 
-        $expectedJson = json_encode($log, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+        $expectedContext = [
+            'user_id' => 123,
+            'action' => 'login',
+            'cart_items' => ['item1', 'item2'],
+            'duration_ms' => 45.2,
+        ];
 
         $logger->expects($this->once())
             ->method('info')
-            ->with($expectedJson);
+            ->with('{message}', $expectedContext);
 
-        $writer = new LoggerWriter($logger, JSON_PRETTY_PRINT);
+        $writer = new LoggerWriter($logger);
         $writer->write($log);
     }
 }
