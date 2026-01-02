@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Knotlog\Output;
+namespace Knotlog\Writer;
 
 use Knotlog\Log;
 use Psr\Log\LoggerInterface;

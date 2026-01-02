@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Knotlog\Tests\Output;
+namespace Knotlog\Tests\Writer;
 
 use Knotlog\Log;
-use Knotlog\Output\LogWriter;
-use Knotlog\Output\SampledWriter;
+use Knotlog\Writer\LogWriter;
+use Knotlog\Writer\SampledWriter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

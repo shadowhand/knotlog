@@ -48,7 +48,7 @@ composer require knotlog/knotlog
 
 ```php
 use Knotlog\Log;
-use Knotlog\Output\FileWriter;
+use Knotlog\Writer\FileWriter;
 
 $log = new Log();
 
@@ -167,7 +167,7 @@ The interface defines a simple contract with a single method `write(Log $log): v
 The `FileWriter` writes log events as JSON-encoded lines to a file or stream.
 
 ```php
-use Knotlog\Output\FileWriter;
+use Knotlog\Writer\FileWriter;
 
 // Write to stderr (default)
 $writer = new FileWriter();
@@ -193,7 +193,7 @@ The `LoggerWriter` outputs log events to any [PSR-3](https://www.php-fig.org/psr
 using message interpolation.
 
 ```php
-use Knotlog\Output\LoggerWriter;
+use Knotlog\Writer\LoggerWriter;
 
 // Use with any PSR-3 logger
 $writer = new LoggerWriter($psrLogger);
@@ -218,8 +218,8 @@ to its own implementation. The message key can be customized to match your loggi
 The `SampledWriter` is a decorator that samples log events based on a configurable rate, while always logging errors.
 
 ```php
-use Knotlog\Output\SampledWriter;
-use Knotlog\Output\FileWriter;
+use Knotlog\Writer\SampledWriter;
+use Knotlog\Writer\FileWriter;
 
 // Sample 1 in 5 requests (20%)
 $writer = new SampledWriter(new FileWriter(), 5);

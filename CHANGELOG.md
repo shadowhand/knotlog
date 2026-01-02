@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - LogResponseError sets the error to the HTTP reason phrase
 - LoggerWriter uses PSR-3 interpolation, and passes the context
+- Output namespace changed to Writer
 
 ## [0.1.0]
 

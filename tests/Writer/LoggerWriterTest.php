@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Knotlog\Tests\Output;
+namespace Knotlog\Tests\Writer;
 
 use Knotlog\Log;
-use Knotlog\Output\LoggerWriter;
+use Knotlog\Writer\LoggerWriter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
