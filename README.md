@@ -112,13 +112,14 @@ $errorFactory = new ServerErrorResponseFactory($responseFactory, $streamFactory)
 $stack->add(new LogRequestError($errorFactory, $log));
 ```
 
-Knotlog provides a middleware to flag every response with a 400+ status as `error: true` in the log.
+Knotlog provides a middleware to flag every response with a 400+ status code as an error in the log.
+The error is set to the HTTP reason phrase (e.g., "Not Found", "Internal Server Error").
 This is particularly useful when log sampling is in effect, ensuring that error responses are always logged.
 
 ```php
 use Knotlog\Http\LogResponseError;
 
-// Flags every response with 400+ status codes as errors
+// Sets error to the reason phrase for 400+ status codes
 $stack->add(new LogResponseError($log));
 ```
 

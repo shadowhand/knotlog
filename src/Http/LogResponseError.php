@@ -28,7 +28,7 @@ final readonly class LogResponseError implements MiddlewareInterface
         $response = $handler->handle($request);
 
         if ($response->getStatusCode() >= 400) {
-            $this->log->set('error', true);
+            $this->log->set('error', $response->getReasonPhrase());
         }
 
         return $response;
