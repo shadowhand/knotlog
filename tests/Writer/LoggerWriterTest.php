@@ -25,7 +25,7 @@ final class LoggerWriterTest extends TestCase
 
         $logger->expects($this->once())
             ->method('info')
-            ->with('{message}', ['message' => 'test', 'user_id' => 123]);
+            ->with('test', ['message' => 'test', 'user_id' => 123]);
 
         $logger->expects($this->never())
             ->method('error');
@@ -45,7 +45,7 @@ final class LoggerWriterTest extends TestCase
 
         $logger->expects($this->once())
             ->method('error')
-            ->with('{error}', ['error' => 'Something went wrong', 'user_id' => 123]);
+            ->with('Something went wrong', ['error' => 'Something went wrong', 'user_id' => 123]);
 
         $logger->expects($this->never())
             ->method('info');
@@ -65,7 +65,7 @@ final class LoggerWriterTest extends TestCase
 
         $logger->expects($this->once())
             ->method('error')
-            ->with('{error}', ['exception' => 'RuntimeException', 'user_id' => 123]);
+            ->with('Knotlog error', ['exception' => 'RuntimeException', 'user_id' => 123]);
 
         $logger->expects($this->never())
             ->method('info');
@@ -85,7 +85,7 @@ final class LoggerWriterTest extends TestCase
 
         $logger->expects($this->once())
             ->method('info')
-            ->with('{msg}', ['msg' => 'custom message', 'user_id' => 123]);
+            ->with('custom message', ['msg' => 'custom message', 'user_id' => 123]);
 
         $writer = new LoggerWriter($logger, messageKey: 'msg');
         $writer->write($log);
@@ -102,7 +102,7 @@ final class LoggerWriterTest extends TestCase
 
         $logger->expects($this->once())
             ->method('error')
-            ->with('{err}', ['error' => 'Something went wrong', 'err' => 'custom error']);
+            ->with('custom error', ['error' => 'Something went wrong', 'err' => 'custom error']);
 
         $writer = new LoggerWriter($logger, errorKey: 'err');
         $writer->write($log);
@@ -128,7 +128,7 @@ final class LoggerWriterTest extends TestCase
 
         $logger->expects($this->once())
             ->method('info')
-            ->with('{message}', $expectedContext);
+            ->with('Knotlog entry', $expectedContext);
 
         $writer = new LoggerWriter($logger);
         $writer->write($log);
