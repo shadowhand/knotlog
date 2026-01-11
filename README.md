@@ -67,6 +67,50 @@ new FileWriter()->write($log);
 
 The `Log` class implements `JsonSerializable`, so it can be directly encoded to JSON for structured logging systems.
 
+## Collecting Multiple Entries
+
+Knotlog provides a `LogList` class to collect multiple entries under a single log key. This is useful for cases where
+a list of related items should be attached to the log, but the number of items is not known in advance, such as:
+
+- Collecting external API calls
+- Tracking database statements executed
+- Recording multiple commands or queries in a CQRS system
+
+```php
+use Knotlog\LogList;
+
+$statements = new LogList();
+
+// Attach the list when database connects, so that it can be populated during the request
+$log->set('db', $statements);
+
+$statements->push(
+    // Application specific class, not provided by Knotlog
+    new LogQuery(
+        sql: 'SELECT * FROM users WHERE id = ?',
+        params: [5513],
+    )
+);
+
+$statements->push(
+    new LogQuery(
+        sql: 'SELECT * FROM orders WHERE user_id = ?',
+        params: [5513],
+    ),
+);
+```
+
+The `LogList` maintains insertion order and will encode as a JSON array:
+
+```json
+{
+  "db": [
+    {"sql": "SELECT * FROM users WHERE id = ?", "params": [5513]},
+    {"sql": "SELECT * FROM orders WHERE user_id = ?", "params": [5513]}
+  ]
+}
+```
+
 ## Exception Logging
 
 Knotlog provides an `ExceptionLog` class to capture exception (`Throwable`) context.
