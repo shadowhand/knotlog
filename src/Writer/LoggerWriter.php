@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Knotlog\Writer;
 
 use Knotlog\Log;
+use Override;
 use Psr\Log\LoggerInterface;
-use Stringable;
-
-use function is_string;
 
 final readonly class LoggerWriter implements LogWriter
 {
@@ -16,45 +14,29 @@ final readonly class LoggerWriter implements LogWriter
         private LoggerInterface $logger,
         private string $messageKey = 'message',
         private string $errorKey = 'error',
-    ) {
+    ) {}
+
+    #[Override]
+    public function write(Log $log): void
+    {
+        $log->hasError() ? $this->writeError($log) : $this->writeInfo($log);
     }
 
-    public function write(Log $log): void
+    private function writeError(Log $log): void
     {
         $context = $log->all();
 
-        if ($log->hasError()) {
-            $this->logger->error($this->getError($context), $context);
-        } else {
-            $this->logger->info($this->getInfo($context), $context);
-        }
+        $message = (string) ($context[$this->errorKey] ?? 'Error');
+
+        $this->logger->error($message, $context);
     }
 
-    /**
-     * @param array<string, mixed> $context
-     */
-    private function getError(array $context): string|Stringable
+    private function writeInfo(Log $log): void
     {
-        $message = $context[$this->errorKey] ?? null;
+        $context = $log->all();
 
-        if (is_string($message) || $message instanceof Stringable) {
-            return $message;
-        }
+        $message = (string) ($context[$this->messageKey] ?? 'Success');
 
-        return 'Knotlog error';
-    }
-
-    /**
-     * @param array<string, mixed> $context
-     */
-    private function getInfo(array $context): string|Stringable
-    {
-        $message = $context[$this->messageKey] ?? null;
-
-        if (is_string($message) || $message instanceof Stringable) {
-            return $message;
-        }
-
-        return 'Knotlog entry';
+        $this->logger->info($message, $context);
     }
 }

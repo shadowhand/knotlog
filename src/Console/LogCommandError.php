@@ -12,8 +12,7 @@ final readonly class LogCommandError
 {
     public function __construct(
         private Log $log,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ConsoleErrorEvent $event): void
     {

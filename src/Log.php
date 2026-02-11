@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Knotlog;
 
 use JsonSerializable;
+use Override;
 
 /**
  * Wide logging context container
@@ -30,7 +31,7 @@ final class Log implements JsonSerializable
      */
     public function has(string $key): bool
     {
-        return isset($this->context[$key]);
+        return ($this->context[$key] ?? null) !== null;
     }
 
     /**
@@ -38,8 +39,7 @@ final class Log implements JsonSerializable
      */
     public function hasError(): bool
     {
-        return $this->has('error')
-            || $this->has('exception');
+        return $this->has('error') || $this->has('exception');
     }
 
     /**
@@ -55,6 +55,7 @@ final class Log implements JsonSerializable
     /**
      * Prepare the log context for JSON serialization
      */
+    #[Override]
     public function jsonSerialize(): object
     {
         return (object) $this->all();

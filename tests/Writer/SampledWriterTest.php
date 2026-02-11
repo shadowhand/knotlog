@@ -24,9 +24,7 @@ final class SampledWriterTest extends TestCase
         $log = new Log();
         $log->set('error', 'Something went wrong');
 
-        $innerWriter->expects($this->once())
-            ->method('write')
-            ->with($log);
+        $innerWriter->expects($this->once())->method('write')->with($log);
 
         $writer = new SampledWriter($innerWriter, PHP_INT_MAX);
         $writer->write($log);
@@ -40,9 +38,7 @@ final class SampledWriterTest extends TestCase
         $log = new Log();
         $log->set('exception', 'RuntimeException');
 
-        $innerWriter->expects($this->once())
-            ->method('write')
-            ->with($log);
+        $innerWriter->expects($this->once())->method('write')->with($log);
 
         $writer = new SampledWriter($innerWriter, PHP_INT_MAX);
         $writer->write($log);
@@ -55,9 +51,7 @@ final class SampledWriterTest extends TestCase
         $log = new Log();
         $log->set('message', 'This is a regular log message');
 
-        $innerWriter->expects($this->once())
-                    ->method('write')
-                    ->with($log);
+        $innerWriter->expects($this->once())->method('write')->with($log);
 
         $writer = new SampledWriter($innerWriter, 1);
         $writer->write($log);

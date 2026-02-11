@@ -12,7 +12,7 @@ final readonly class ResponseLog
     {
         return new self(
             status: $response->getStatusCode(),
-            // @phpstan-ignore argument.type
+            // @mago-ignore analysis:less-specific-argument
             headers: $response->getHeaders(),
             size: $response->getBody()->getSize(),
         );
@@ -22,7 +22,6 @@ final readonly class ResponseLog
         public int $status,
         /** @var array<string, list<string>> */
         public array $headers,
-        public int|null $size,
-    ) {
-    }
+        public ?int $size,
+    ) {}
 }

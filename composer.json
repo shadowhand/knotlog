@@ -22,16 +22,15 @@
         }
     ],
     "require": {
-        "php": "^8.4"
+        "php": "^8.4",
+        "symfony/filesystem": "^8.0"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.27",
         "captainhook/hook-installer": "^1.0",
-        "doctrine/coding-standard": "^14.0",
+        "carthage-software/mago": "^1.7.0",
         "ergebnis/composer-normalize": "^2.48",
         "nyholm/psr7": "^1.1",
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^12.5.8",
         "psr/http-factory": "^1.1",
         "psr/http-message": "^2.0",
@@ -63,23 +62,23 @@
     "config": {
         "allow-plugins": {
             "captainhook/hook-installer": true,
+            "carthage-software/mago": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "ergebnis/composer-normalize": true,
-            "phpstan/extension-installer": true
+            "ergebnis/composer-normalize": true
         },
         "preferred-install": "dist",
         "sort-packages": true
     },
     "scripts": {
-        "coverage": "coverage-check build/phpunit/clover.xml 100",
-        "phpcs": "vendor/bin/phpcs",
-        "phpstan": "vendor/bin/phpstan analyse --memory-limit=4G",
-        "phpunit": "vendor/bin/phpunit",
-        "test": [
-            "@phpcs",
-            "@phpstan",
-            "@phpunit",
-            "@coverage"
+        "analyze": "vendor/bin/mago analyze",
+        "cover": "coverage-check build/phpunit/clover.xml 100",
+        "lint": "vendor/bin/mago lint",
+        "test": "vendor/bin/phpunit",
+        "check": [
+            "@lint",
+            "@analyze",
+            "@test",
+            "@cover"
         ]
     }
 }
