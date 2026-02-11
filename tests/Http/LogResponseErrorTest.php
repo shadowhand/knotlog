@@ -8,6 +8,7 @@ use Knotlog\Http\LogResponseError;
 use Knotlog\Log;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
+use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -86,11 +87,12 @@ final class LogResponseErrorTest extends TestCase
 
     private function createMockHandler(ResponseInterface $response): RequestHandlerInterface
     {
-        return new readonly class ($response) implements RequestHandlerInterface {
-            public function __construct(private ResponseInterface $response)
-            {
-            }
+        return new readonly class($response) implements RequestHandlerInterface {
+            public function __construct(
+                private ResponseInterface $response,
+            ) {}
 
+            #[Override]
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->response;

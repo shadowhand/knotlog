@@ -11,6 +11,7 @@ use Knotlog\Log;
 use Knotlog\Misc\ExceptionLog;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
+use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -62,11 +63,12 @@ final class LogRequestErrorTest extends TestCase
     {
         $response = new Response(500);
 
-        return new readonly class ($response) implements ErrorResponseFactory {
-            public function __construct(private ResponseInterface $response)
-            {
-            }
+        return new readonly class($response) implements ErrorResponseFactory {
+            public function __construct(
+                private ResponseInterface $response,
+            ) {}
 
+            #[Override]
             public function createErrorResponse(Throwable $throwable): ResponseInterface
             {
                 return $this->response;
@@ -76,11 +78,12 @@ final class LogRequestErrorTest extends TestCase
 
     private function createMockHandler(ResponseInterface $response): RequestHandlerInterface
     {
-        return new readonly class ($response) implements RequestHandlerInterface {
-            public function __construct(private ResponseInterface $response)
-            {
-            }
+        return new readonly class($response) implements RequestHandlerInterface {
+            public function __construct(
+                private ResponseInterface $response,
+            ) {}
 
+            #[Override]
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->response;
@@ -90,11 +93,12 @@ final class LogRequestErrorTest extends TestCase
 
     private function createThrowingHandler(Throwable $exception): RequestHandlerInterface
     {
-        return new readonly class ($exception) implements RequestHandlerInterface {
-            public function __construct(private Throwable $exception)
-            {
-            }
+        return new readonly class($exception) implements RequestHandlerInterface {
+            public function __construct(
+                private Throwable $exception,
+            ) {}
 
+            #[Override]
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 throw $this->exception;

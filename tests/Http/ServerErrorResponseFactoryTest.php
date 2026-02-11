@@ -34,6 +34,7 @@ final class ServerErrorResponseFactoryTest extends TestCase
         $this->assertJson($body);
         $this->assertStringNotContainsString($exception->getMessage(), $body);
 
+        // @mago-ignore analysis:mixed-assignment
         $data = json_decode($body, true);
 
         $this->assertIsArray($data);

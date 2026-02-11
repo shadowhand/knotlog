@@ -40,14 +40,14 @@ jobs:
       - name: Install dependencies
         run: composer install --no-progress --no-interaction
 
-      - name: Run code standards check
-        run: composer phpcs
+      - name: Run Mago style check
+        run: composer run lint
 
-      - name: Run static analysis
-        run: composer phpstan
+      - name: Run Mago static analysis
+        run: composer run analyze
 
       - name: Run PHPUnit tests
-        run: composer phpunit
+        run: composer run test
 
       - name: Check code coverage
-        run: composer coverage
+        run: composer run cover

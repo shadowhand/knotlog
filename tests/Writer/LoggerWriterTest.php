@@ -23,12 +23,9 @@ final class LoggerWriterTest extends TestCase
         $log->set('message', 'test');
         $log->set('user_id', 123);
 
-        $logger->expects($this->once())
-            ->method('info')
-            ->with('test', ['message' => 'test', 'user_id' => 123]);
+        $logger->expects($this->once())->method('info')->with('test', ['message' => 'test', 'user_id' => 123]);
 
-        $logger->expects($this->never())
-            ->method('error');
+        $logger->expects($this->never())->method('error');
 
         $writer = new LoggerWriter($logger);
         $writer->write($log);
@@ -43,12 +40,12 @@ final class LoggerWriterTest extends TestCase
         $log->set('error', 'Something went wrong');
         $log->set('user_id', 123);
 
-        $logger->expects($this->once())
+        $logger
+            ->expects($this->once())
             ->method('error')
             ->with('Something went wrong', ['error' => 'Something went wrong', 'user_id' => 123]);
 
-        $logger->expects($this->never())
-            ->method('info');
+        $logger->expects($this->never())->method('info');
 
         $writer = new LoggerWriter($logger);
         $writer->write($log);
@@ -63,12 +60,12 @@ final class LoggerWriterTest extends TestCase
         $log->set('exception', 'RuntimeException');
         $log->set('user_id', 123);
 
-        $logger->expects($this->once())
+        $logger
+            ->expects($this->once())
             ->method('error')
-            ->with('Knotlog error', ['exception' => 'RuntimeException', 'user_id' => 123]);
+            ->with('Error', ['exception' => 'RuntimeException', 'user_id' => 123]);
 
-        $logger->expects($this->never())
-            ->method('info');
+        $logger->expects($this->never())->method('info');
 
         $writer = new LoggerWriter($logger);
         $writer->write($log);
@@ -83,7 +80,8 @@ final class LoggerWriterTest extends TestCase
         $log->set('msg', 'custom message');
         $log->set('user_id', 123);
 
-        $logger->expects($this->once())
+        $logger
+            ->expects($this->once())
             ->method('info')
             ->with('custom message', ['msg' => 'custom message', 'user_id' => 123]);
 
@@ -100,7 +98,8 @@ final class LoggerWriterTest extends TestCase
         $log->set('error', 'Something went wrong');
         $log->set('err', 'custom error');
 
-        $logger->expects($this->once())
+        $logger
+            ->expects($this->once())
             ->method('error')
             ->with('custom error', ['error' => 'Something went wrong', 'err' => 'custom error']);
 
@@ -126,9 +125,7 @@ final class LoggerWriterTest extends TestCase
             'duration_ms' => 45.2,
         ];
 
-        $logger->expects($this->once())
-            ->method('info')
-            ->with('Knotlog entry', $expectedContext);
+        $logger->expects($this->once())->method('info')->with('Success', $expectedContext);
 
         $writer = new LoggerWriter($logger);
         $writer->write($log);

@@ -14,8 +14,8 @@ final readonly class ExceptionLog
             type: $exception::class,
             message: $exception->getMessage(),
             code: $exception->getCode(),
-            file: $exception->getFile(),
-            line: $exception->getLine(),
+            source: new ExceptionSource($exception->getFile(), $exception->getLine()),
+            // @mago-ignore analysis:possibly-invalid-argument
             trace: $exception->getTrace(),
         );
     }
@@ -23,11 +23,9 @@ final readonly class ExceptionLog
     public function __construct(
         public string $type,
         public string $message,
-        public int $code,
-        public string $file,
-        public int $line,
+        public int|string $code,
+        public ExceptionSource $source,
         /** @var list<array<string, mixed>> */
         public array $trace = [],
-    ) {
-    }
+    ) {}
 }

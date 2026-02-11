@@ -10,6 +10,7 @@ use Knotlog\Http\ResponseLog;
 use Knotlog\Log;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
+use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -26,17 +27,11 @@ final class LogRequestResponseTest extends TestCase
         $log = new Log();
         $middleware = new LogRequestResponse($log);
 
-        $request = new ServerRequest(
-            'POST',
-            'https://api.example.com/checkout?session=abc123',
-            ['Content-Type' => 'application/json'],
-        );
+        $request = new ServerRequest('POST', 'https://api.example.com/checkout?session=abc123', [
+            'Content-Type' => 'application/json',
+        ]);
 
-        $response = new Response(
-            201,
-            ['Location' => '/orders/456'],
-            '{"order_id": 456}',
-        );
+        $response = new Response(201, ['Location' => '/orders/456'], '{"order_id": 456}');
 
         $handler = $this->createMockHandler($response);
 
@@ -45,19 +40,17 @@ final class LogRequestResponseTest extends TestCase
         $context = $log->all();
 
         // Verify request was logged
-        $this->assertArrayHasKey('request', $context);
-        $requestLog = $context['request'];
+        // @mago-ignore analysis:mixed-assignment
+        $requestLog = $context['request'] ?? null;
         $this->assertInstanceOf(RequestLog::class, $requestLog);
-
         $this->assertSame('POST', $requestLog->method);
         $this->assertSame('api.example.com', $requestLog->host);
         $this->assertSame('/checkout', $requestLog->path);
 
         // Verify response was logged
-        $this->assertArrayHasKey('response', $context);
-        $responseLog = $context['response'];
+        // @mago-ignore analysis:mixed-assignment
+        $responseLog = $context['response'] ?? null;
         $this->assertInstanceOf(ResponseLog::class, $responseLog);
-
         $this->assertSame(201, $responseLog->status);
         $this->assertArrayHasKey('Location', $responseLog->headers);
 
@@ -67,11 +60,12 @@ final class LogRequestResponseTest extends TestCase
 
     private function createMockHandler(ResponseInterface $response): RequestHandlerInterface
     {
-        return new readonly class ($response) implements RequestHandlerInterface {
-            public function __construct(private ResponseInterface $response)
-            {
-            }
+        return new readonly class($response) implements RequestHandlerInterface {
+            public function __construct(
+                private ResponseInterface $response,
+            ) {}
 
+            #[Override]
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->response;

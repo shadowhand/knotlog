@@ -123,7 +123,6 @@ final class LogListTest extends TestCase
 
         $result = $logList->jsonSerialize();
 
-        $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertSame($item1, $result[0]);
         $this->assertSame($item2, $result[1]);
@@ -136,7 +135,6 @@ final class LogListTest extends TestCase
 
         $result = $logList->jsonSerialize();
 
-        $this->assertIsArray($result);
         $this->assertCount(0, $result);
     }
 }

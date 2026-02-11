@@ -11,8 +11,7 @@ final readonly class LogCommandEvent
 {
     public function __construct(
         private Log $log,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ConsoleCommandEvent $event): void
     {

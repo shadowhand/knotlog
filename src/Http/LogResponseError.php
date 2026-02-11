@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Knotlog\Http;
 
 use Knotlog\Log;
+use Override;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -20,9 +21,9 @@ final readonly class LogResponseError implements MiddlewareInterface
 {
     public function __construct(
         private Log $log,
-    ) {
-    }
+    ) {}
 
+    #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);

@@ -12,6 +12,8 @@ final readonly class RequestLog
 {
     public static function fromRequest(RequestInterface $request): self
     {
+        $query = [];
+
         parse_str($request->getUri()->getQuery(), $query);
 
         return new self(
@@ -19,7 +21,7 @@ final readonly class RequestLog
             host: $request->getUri()->getHost(),
             path: $request->getUri()->getPath(),
             query: $query,
-            // @phpstan-ignore argument.type
+            // @mago-ignore analysis:less-specific-argument
             headers: $request->getHeaders(),
         );
     }
@@ -30,8 +32,7 @@ final readonly class RequestLog
         public string $path,
         /** @var array<array-key, mixed> */
         public array $query,
-        /** @var array<string, list<string>> */
+        /** @var array<string,list<string>> */
         public array $headers,
-    ) {
-    }
+    ) {}
 }
