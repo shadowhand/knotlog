@@ -32,13 +32,13 @@
         "nyholm/psr7": "^1.1",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-phpunit": "^2.0",
-        "phpunit/phpunit": "^12.0",
-        "psr/log": "^3.0",
+        "phpunit/phpunit": "^12.5.8",
         "psr/http-factory": "^1.1",
         "psr/http-message": "^2.0",
         "psr/http-server-middleware": "^1.0",
+        "psr/log": "^3.0",
         "rregeer/phpunit-coverage-check": "^0.3.1",
-        "symfony/console": "^8.0",
+        "symfony/console": "^8.0.4",
         "symfony/event-dispatcher-contracts": "^3.6"
     },
     "suggest": {
