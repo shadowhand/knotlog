@@ -306,6 +306,33 @@ The sampled writer ensures that:
 This is particularly useful for high-traffic applications where logging every successful request would be
 prohibitively expensive, while still capturing all errors for debugging.
 
+### ToggledWriter
+
+The `ToggledWriter` is a decorator that allows log writing to be enabled or disabled at runtime.
+
+```php
+use Knotlog\Writer\ToggledWriter;
+use Knotlog\Writer\FileWriter;
+
+// Enabled by default
+$writer = new ToggledWriter(new FileWriter());
+
+// Or start disabled
+$writer = new ToggledWriter(new FileWriter(), writeLogs: false);
+
+// Disable writing at any point
+$writer->disable();
+
+// Re-enable writing
+$writer->enable();
+
+// Only writes if enabled
+$writer->write($log);
+```
+
+This is useful for conditionally disabling log output based on runtime configuration, such as
+feature flags or environment-specific settings.
+
 ## License
 
 MIT License, see `LICENSE` file for details.

@@ -72,6 +72,10 @@
     "scripts": {
         "analyze": "vendor/bin/mago analyze",
         "cover": "coverage-check build/phpunit/clover.xml 100",
+        "fix": [
+            "vendor/bin/mago lint --fix",
+            "vendor/bin/mago format"
+        ],
         "lint": "vendor/bin/mago lint",
         "test": "vendor/bin/phpunit",
         "check": [

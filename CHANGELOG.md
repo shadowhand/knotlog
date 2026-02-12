@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added a `Log::append()` method to allow attaching multiple entries, without using `LogList`
+- Added `ToggledWriter` to enable or disable log writing at runtime
 
 ## [0.4.0]
 
