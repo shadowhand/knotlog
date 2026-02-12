@@ -69,8 +69,20 @@ The `Log` class implements `JsonSerializable`, so it can be directly encoded to 
 
 ## Collecting Multiple Entries
 
-Knotlog provides a `LogList` class to collect multiple entries under a single log key. This is useful for cases where
-a list of related items should be attached to the log, but the number of items is not known in advance, such as:
+Knotlog also has an `append()` method that allows adding multiple values under a single key, without overwriting:
+
+```php
+$log->append('features', 'new_checkout');
+$log->append('features', 'recommendations');
+```
+
+This is useful in situations where related items are populated by different parts of the codebase.
+
+### Service Logging
+
+Additionally, Knotlog provides a `LogList` class that can be passed to dependencies and used to attach multiple
+entries under a single key. This is useful for cases where a service should be able to log multiple related items,
+without directly having access to the main `Log` instance, such as:
 
 - Collecting external API calls
 - Tracking database statements executed
@@ -81,24 +93,34 @@ use Knotlog\LogList;
 
 $statements = new LogList();
 
-// Attach the list when database connects, so that it can be populated during the request
+// Attach the list to the main log.
 $log->set('db', $statements);
 
-$statements->push(
-    // Application specific class, not provided by Knotlog
+// Pass the list to a database connection.
+$db = new Connection(log: $statements, /* ... */);
+```
+
+Then, inside the service class (`Connection` in this example), use the `LogList` to add entries:
+
+```php
+$this->log->push(
+    // This class would be application-specific and is not provided by Knotlog
     new LogQuery(
         sql: 'SELECT * FROM users WHERE id = ?',
         params: [5513],
     )
 );
 
-$statements->push(
+// Push an entry for every query executed, or specific queries of interest.
+$this->log->push(
     new LogQuery(
         sql: 'SELECT * FROM orders WHERE user_id = ?',
         params: [5513],
     ),
 );
 ```
+
+⚠️ _LogList entries MUST be objects. Complex objects SHOULD implement JsonSerializable._
 
 The `LogList` maintains insertion order and will encode as a JSON array:
 
