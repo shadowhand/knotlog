@@ -7,6 +7,9 @@ namespace Knotlog;
 use JsonSerializable;
 use Override;
 
+use function array_is_list;
+use function is_array;
+
 /**
  * Wide logging context container
  *
@@ -24,6 +27,20 @@ final class Log implements JsonSerializable
     public function set(string $key, mixed $value): void
     {
         $this->context[$key] = $value;
+    }
+
+    /**
+     * @throws LogException if the current value of the key is not a list.
+     */
+    public function append(string $key, mixed $value): void
+    {
+        $this->context[$key] ??= [];
+
+        if (!is_array($this->context[$key]) || !array_is_list($this->context[$key])) {
+            throw LogException::cannotAppendToKey($key);
+        }
+
+        $this->context[$key][] = $value;
     }
 
     /**

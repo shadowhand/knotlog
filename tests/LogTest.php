@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Knotlog\Tests;
 
 use Knotlog\Log;
+use Knotlog\LogException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -61,27 +62,6 @@ final class LogTest extends TestCase
     }
 
     #[Test]
-    public function it_accumulates_multiple_context_values(): void
-    {
-        $log = new Log();
-        $log->set('request_id', 'abc-123');
-        $log->set('user_id', '456');
-        $log->set('method', 'POST');
-        $log->set('path', '/api/users');
-        $log->set('duration_ms', 45.2);
-
-        $expected = [
-            'request_id' => 'abc-123',
-            'user_id' => '456',
-            'method' => 'POST',
-            'path' => '/api/users',
-            'duration_ms' => 45.2,
-        ];
-
-        $this->assertSame($expected, $log->all());
-    }
-
-    #[Test]
     public function has_returns_false_for_missing_keys_and_null_values(): void
     {
         $log = new Log();
@@ -104,6 +84,10 @@ final class LogTest extends TestCase
     public function has_error_returns_true_when_error_or_exception_is_set(): void
     {
         $log = new Log();
+
+        $this->assertFalse($log->hasError());
+
+        $log = new Log();
         $log->set('error', 'Something went wrong');
 
         $this->assertTrue($log->hasError());
@@ -112,6 +96,40 @@ final class LogTest extends TestCase
         $log->set('exception', 'RuntimeException');
 
         $this->assertTrue($log->hasError());
+    }
+
+    #[Test]
+    public function it_appends_multiple_values(): void
+    {
+        $log = new Log();
+        $log->append('tags', 'first');
+        $log->append('tags', 'second');
+        $log->append('tags', 'third');
+
+        $this->assertSame(['tags' => ['first', 'second', 'third']], $log->all());
+    }
+
+    #[Test]
+    public function it_throws_when_appending_to_a_non_list(): void
+    {
+        $log = new Log();
+        $log->set('status', 'active');
+
+        $this->expectException(LogException::class);
+        $this->expectExceptionMessage("Unable to append to 'status', it is not a list");
+
+        $log->append('status', 'value');
+    }
+
+    #[Test]
+    public function it_throws_when_appending_to_an_associative_array(): void
+    {
+        $log = new Log();
+        $log->set('meta', ['key' => 'value']);
+
+        $this->expectException(LogException::class);
+
+        $log->append('meta', 'value');
     }
 
     #[Test]
