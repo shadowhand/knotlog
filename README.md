@@ -138,7 +138,7 @@ The `LogList` maintains insertion order and will encode as a JSON array:
 Knotlog provides an `ExceptionLog` class to capture exception (`Throwable`) context.
 
 ```php
-use Knotlog\ExceptionLog;
+use Knotlog\Misc\ExceptionLog;
 
 try {
     // Some code that may throw
