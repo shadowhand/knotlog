@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Knotlog\Tests\Http;
 
-use Exception;
 use Knotlog\Http\ErrorResponseFactory;
 use Knotlog\Http\LogRequestError;
 use Knotlog\Log;
-use Knotlog\Misc\ExceptionLog;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use Override;
@@ -18,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 use Throwable;
 
 #[CoversClass(LogRequestError::class)]
@@ -49,14 +48,19 @@ final class LogRequestErrorTest extends TestCase
         $middleware = new LogRequestError($errorFactory, $log);
 
         $request = new ServerRequest('GET', 'https://api.example.com/error');
-        $exception = new Exception('Something went wrong');
+        $exception = new RuntimeException('Something went wrong');
 
         $handler = $this->createThrowingHandler($exception);
 
         $middleware->process($request, $handler);
 
         $this->assertTrue($log->hasError());
-        $this->assertInstanceOf(ExceptionLog::class, $log->all()['exception']);
+
+        $msg = $log->all()['error'];
+
+        $this->assertTrue(is_string($msg));
+        $this->assertStringContainsString($exception::class, $msg);
+        $this->assertStringContainsString($exception->getMessage(), $msg);
     }
 
     private function createMockErrorFactory(): ErrorResponseFactory

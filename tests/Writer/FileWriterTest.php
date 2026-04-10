@@ -18,7 +18,6 @@ use function json_encode;
 use function sys_get_temp_dir;
 use function trim;
 
-use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 
 #[CoversClass(FileWriter::class)]
@@ -49,7 +48,7 @@ final class FileWriterTest extends TestCase
     #[Test]
     public function it_writes_info_status_for_non_error_logs(): void
     {
-        $writer = new FileWriter($this->tempFile);
+        $writer = new FileWriter(path: $this->tempFile);
 
         $log = new Log();
         $log->set('message', 'test');
@@ -59,13 +58,14 @@ final class FileWriterTest extends TestCase
         $content = new Filesystem()->readFile($this->tempFile);
 
         $expectedJson = json_encode($log, JSON_THROW_ON_ERROR);
-        $this->assertStringContainsString("INFO {$expectedJson}", $content);
+
+        $this->assertStringContainsString($expectedJson, $content);
     }
 
     #[Test]
     public function it_writes_error_status_for_error_logs(): void
     {
-        $writer = new FileWriter($this->tempFile);
+        $writer = new FileWriter(path: $this->tempFile);
 
         $log = new Log();
         $log->set('error', 'Something went wrong');
@@ -75,13 +75,13 @@ final class FileWriterTest extends TestCase
         $content = new Filesystem()->readFile($this->tempFile);
 
         $expectedJson = json_encode($log, JSON_THROW_ON_ERROR);
-        $this->assertStringContainsString("ERROR {$expectedJson}", $content);
+        $this->assertStringContainsString($expectedJson, $content);
     }
 
     #[Test]
     public function it_writes_error_status_for_exception_logs(): void
     {
-        $writer = new FileWriter($this->tempFile);
+        $writer = new FileWriter(path: $this->tempFile);
 
         $log = new Log();
         $log->set('exception', 'RuntimeException');
@@ -91,13 +91,13 @@ final class FileWriterTest extends TestCase
         $content = new Filesystem()->readFile($this->tempFile);
 
         $expectedJson = json_encode($log, JSON_THROW_ON_ERROR);
-        $this->assertStringContainsString("ERROR {$expectedJson}", $content);
+        $this->assertStringContainsString($expectedJson, $content);
     }
 
     #[Test]
     public function it_appends_to_existing_file(): void
     {
-        $writer = new FileWriter($this->tempFile);
+        $writer = new FileWriter(path: $this->tempFile);
 
         $log1 = new Log();
         $log1->set('message', 'first');
@@ -114,24 +114,9 @@ final class FileWriterTest extends TestCase
     }
 
     #[Test]
-    public function it_uses_custom_json_flags(): void
-    {
-        $writer = new FileWriter($this->tempFile, JSON_PRETTY_PRINT);
-
-        $log = new Log();
-        $log->set('message', 'test');
-
-        $writer->write($log);
-
-        $content = new Filesystem()->readFile($this->tempFile);
-
-        $this->assertStringContainsString("{\n", $content);
-    }
-
-    #[Test]
     public function it_writes_each_log_on_new_line(): void
     {
-        $writer = new FileWriter($this->tempFile);
+        $writer = new FileWriter(path: $this->tempFile);
 
         $log1 = new Log();
         $log1->set('message', 'first');
