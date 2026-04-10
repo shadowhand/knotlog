@@ -8,26 +8,20 @@ use Knotlog\Log;
 use Override;
 use Symfony\Component\Filesystem\Filesystem;
 
-use function json_encode;
-
-use const JSON_THROW_ON_ERROR;
-
 final readonly class FileWriter implements LogWriter
 {
     public function __construct(
-        private string $path = 'php://stderr',
-        private int $flags = 0,
         private Filesystem $filesystem = new Filesystem(),
+        private LogFormatter $formatter = new JsonFormatter(),
+        private string $path = 'php://stderr',
     ) {}
 
     #[Override]
     public function write(Log $log): void
     {
-        $status = $log->hasError() ? 'ERROR' : 'INFO';
-
-        $line = json_encode($log, JSON_THROW_ON_ERROR | $this->flags);
+        $line = $this->formatter->format($log);
 
         // @mago-ignore analysis:unhandled-thrown-type
-        $this->filesystem->appendToFile($this->path, "{$status} {$line}\n");
+        $this->filesystem->appendToFile($this->path, "{$line}\n");
     }
 }

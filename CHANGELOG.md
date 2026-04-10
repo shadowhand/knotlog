@@ -9,12 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- ⚠️ BREAKING! `ExceptionLog` has been removed
+- ⚠️ BREAKING! `LogCommandError` and `LogRequestError` now log the exception type and message to `error`,
+  instead of logging the exception object to `exception`
 - Switched to [Mago](https://mago.carthage.software/) for formatting and analysis
 
 ### Added
 
 - Added a `Log::append()` method to allow attaching multiple entries, without using `LogList`
 - Added `ToggledWriter` to enable or disable log writing at runtime
+- Added `LogFormatter` and `JsonFormatter` to allow customization of log lines
 
 ## [0.4.0]
 

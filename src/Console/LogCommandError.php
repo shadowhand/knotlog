@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Knotlog\Console;
 
 use Knotlog\Log;
-use Knotlog\Misc\ExceptionLog;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 
 final readonly class LogCommandError
@@ -16,6 +15,8 @@ final readonly class LogCommandError
 
     public function __invoke(ConsoleErrorEvent $event): void
     {
-        $this->log->set('exception', ExceptionLog::fromThrowable($event->getError()));
+        $throwable = $event->getError();
+
+        $this->log->set('error', sprintf('%s %s', $throwable::class, $throwable->getMessage()));
     }
 }

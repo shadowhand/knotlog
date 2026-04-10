@@ -135,23 +135,12 @@ The `LogList` maintains insertion order and will encode as a JSON array:
 
 ## Exception Logging
 
-Knotlog provides an `ExceptionLog` class to capture exception (`Throwable`) context.
-
-```php
-use Knotlog\Misc\ExceptionLog;
-
-try {
-    // Some code that may throw
-} catch (Throwable) {
-    $log->add('exception', ExceptionLog::fromThrowable($throwable));
-}
-```
-
-⚠️ _The exception log includes the stack trace, which may be very large and include sensitive information.
-It is recommended to set `zend.exception_ignore_args = On` in your `php.ini` to minimize the stack trace._
+It is **not** recommended to add exception objects to Knotlog. Exception tracing is better handled by other systems,
+such as [Monolog](https://seldaek.github.io/monolog/) or another [PSR-3](https://www.php-fig.org/psr/psr-3/) logger.
 
 For convenience, `Log` provides a `hasError()` method that will return true if either the `exception` or `error`
-keys are set. This is particularly useful for determining if the log should be output when sampling is enabled.
+keys are set in the log. This is particularly useful for determining if the log should be output when sampling
+is enabled.
 
 ## HTTP Middleware
 
@@ -174,7 +163,7 @@ use Knotlog\Http\ServerErrorResponseFactory;
 // The default factory creates a minimal 500 response
 $errorFactory = new ServerErrorResponseFactory($responseFactory, $streamFactory);
 
-// Logs uncaught exceptions and outputs an error response
+// Logs uncaught exception type and message, and outputs an error response
 $stack->add(new LogRequestError($errorFactory, $log));
 ```
 
@@ -210,7 +199,7 @@ use Symfony\Component\Console\ConsoleEvents;
 // Logs command metadata on execution
 $eventDispatcher->addListener(ConsoleEvents::COMMAND, new LogCommandEvent($log));
 
-// Logs command error context on failure
+// Logs uncaught exception type and message
 $eventDispatcher->addListener(ConsoleEvents::ERROR, new LogCommandError($log));
 ```
 
@@ -226,11 +215,11 @@ $log->set('console', LogCommand::fromCommand($command, $input));
 ## Log Writers
 
 Knotlog provides a `LogWriter` interface to enable flexible output destinations for wide log events.
-The interface defines a simple contract with a single method `write(Log $log): void`.
+The interface defines a contract with a single method `write(Log $log): void`.
 
 ### FileWriter
 
-The `FileWriter` writes log events as JSON-encoded lines to a file or stream.
+The `FileWriter` writes log events to a file.
 
 ```php
 use Knotlog\Writer\FileWriter;
@@ -241,17 +230,9 @@ $writer = new FileWriter();
 // Write to a specific file
 $writer = new FileWriter('/var/log/app.log');
 
-// Use custom JSON encoding flags
-$writer = new FileWriter('php://stdout', JSON_PRETTY_PRINT);
-
 // Write the log event
 $writer->write($log);
 ```
-
-Each log line is prefixed with a status indicator:
-
-- `ERROR` - when the log contains an error or exception
-- `INFO` - for all other log events
 
 ### LoggerWriter
 
@@ -332,6 +313,19 @@ $writer->write($log);
 
 This is useful for conditionally disabling log output based on runtime configuration, such as
 feature flags or environment-specific settings.
+
+## Log Formatters
+
+Knotlog provides a `LogFormatter` interface to enable flexible formatting of log lines.
+The interface defines a contract with a single method `format(Log $log): string`.
+
+### JsonFormatter
+
+The `JsonFormatter` formats log events as JSON strings. Additional flags may be passed through to `json_encode`:
+
+```php
+$formatter = new JsonFormatter(JSON_PRETTY_PRINT);
+```
 
 ## License
 

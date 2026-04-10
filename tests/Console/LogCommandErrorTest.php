@@ -6,7 +6,6 @@ namespace Knotlog\Tests\Console;
 
 use Knotlog\Console\LogCommandError;
 use Knotlog\Log;
-use Knotlog\Misc\ExceptionLog;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -35,6 +34,11 @@ final class LogCommandErrorTest extends TestCase
         $listener($event);
 
         $this->assertTrue($log->hasError());
-        $this->assertInstanceOf(ExceptionLog::class, $log->all()['exception']);
+
+        $msg = $log->all()['error'];
+
+        $this->assertTrue(is_string($msg));
+        $this->assertStringContainsString($exception::class, $msg);
+        $this->assertStringContainsString($exception->getMessage(), $msg);
     }
 }

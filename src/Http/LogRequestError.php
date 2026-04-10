@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Knotlog\Http;
 
 use Knotlog\Log;
-use Knotlog\Misc\ExceptionLog;
 use Override;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +28,7 @@ final readonly class LogRequestError implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (Throwable $throwable) {
-            $this->log->set('exception', ExceptionLog::fromThrowable($throwable));
+            $this->log->set('error', sprintf('%s %s', $throwable::class, $throwable->getMessage()));
 
             return $this->errorResponseFactory->createErrorResponse($throwable);
         }
